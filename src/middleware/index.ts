@@ -1,5 +1,7 @@
 import express from 'express';
 
+import API from './API';
+
 const middleware = express.Router();
 
 middleware.get('/*', (request, response, next) => {
@@ -7,5 +9,7 @@ middleware.get('/*', (request, response, next) => {
 
     next();
 });
+
+middleware.use('/api', ...API);
 
 export default middleware;

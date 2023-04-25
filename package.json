@@ -7,7 +7,7 @@
     "build": "rimraf ./build && tsc",
     "start": "npm run build && node build/index.js",
     "start:dev": "npx nodemon",
-    "test": "echo 'no tests defined'"
+    "test": "jest --passWithNoTests"
   },
   "keywords": [],
   "author": "",

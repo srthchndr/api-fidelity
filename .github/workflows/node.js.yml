@@ -48,6 +48,8 @@ jobs:
       with:
         name: build
         path: build
+      env: 
+        DB_CONNECTION_STRING: mongodb+srv://testuser01:xHng6S19Hha50XNp@fidelity.qlkzdg7.mongodb.net/?retryWrites=true&w=majority
      
   deploy-gcr:
     name: Deploy to GCR
@@ -89,5 +91,4 @@ jobs:
             --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA" \
             --platform "managed" \
             --allow-unauthenticated
-            --set-env-vars=[DB_CONNECTION_STRING=mongodb+srv://testuser01:xHng6S19Hha50XNp@fidelity.qlkzdg7.mongodb.net/?retryWrites=true&w=majority]
       

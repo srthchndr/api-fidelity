@@ -89,7 +89,5 @@ jobs:
         with:
           service: '${{SERVICE_NAME}}'
           image: 'gcr.io/${{PROJECT_ID}}/${{SERVICE_NAME}}:$GITHUB_SHA'
-          env_vars: |
-            DB_CONNECTION_STRING=mongodb+srv://testuser01:xHng6S19Hha50XNp@fidelity.qlkzdg7.mongodb.net/?retryWrites=true&w=majority
-            CLIENT_BASE_URL=http://localhost:3000
+          
 

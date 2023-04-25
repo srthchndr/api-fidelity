@@ -8,6 +8,11 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  
+env:
+  PROJECT_ID: ${{ secrets.GCR_PROJECT }}
+  RUN_REGION: us-central1
+  SERVICE_NAME: api-fidelity
 
 jobs:
   build:
@@ -20,15 +25,67 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+
     - name: Install Packages
       run: npm ci
+
     - name: Build Application
       run: npm run build --if-present
+
     - name: Validating tests
       run: npm test
+    
+    - name: Archive Production Artifact
+      uses: actions/upload-artifact@main
+      with:
+        name: build
+        path: build
+     
+  deploy-gcr:
+    name: Deploy to GCR
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@main
+
+      - name: Download Artifact
+        uses: actions/download-artifact@main
+        with:
+          name: build
+          path: .docker/build
+
+      - name: Setup GCloud Auth
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCR_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.1
+
+      # Build and push image to Google Container Registry
+      - name: Build & Push
+        run: |-
+          gcloud builds submit \
+            --quiet \
+            --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA"
+        working-directory: .docker
+
+      # Deploy image to Cloud Run
+      - name: Deploying to CloudRun
+        id: 'deploy'
+        uses: 'google-github-actions/deploy-cloudrun@v1'
+        with:
+          service: '$SERVICE_NAME'
+          image: 'gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA'
+      

@@ -24,13 +24,13 @@ const start = async () => {
     try {
         await mongoose.connect(DB_CONNECTION_STRING);
         console.log('Connected to DB');
+    }catch (error) {
+        console.log("Mongo didnt connect");
+        // process.exit(1);
+    }
         const server = app.listen(PORT || 5100, () => {
             console.log(`Started server on ${PORT || 5100}`)
         });
-    }catch (error) {
-        console.log(error);
-        // process.exit(1);
-    }
 }
 
 start();

@@ -1,36 +1,34 @@
 import { Model, model } from "mongoose";
-import { EmployeeWithID } from "../types/employeeModelTypes";
-import { Employee, EmployeeSchema } from "../schemas/EmployeeSchema";
+import { Employee, EmployeeWithID, dbResponseFunction } from "../types/employeeModelTypes";
+import { EmployeeSchema } from "../schemas/EmployeeSchema";
 
-const Employee = model<Employee>('Employee', EmployeeSchema);
+const EmployeeDocument = model<Employee>('Employee', EmployeeSchema);
 
 class EmployeesModel{
-    async addEmployee(employeeDetails: Employee) {
+    async addEmployee(employeeDetails: Employee): Promise<EmployeeWithID> {
         const {name, dob, description, lastUpdated} = employeeDetails;
-        const employee = new Employee({name, dob, description, lastUpdated});
-
-        await employee.save();
-        console.log(employee);
-        return employee;
+        const employee = new EmployeeDocument({name, dob, description, lastUpdated});
+        const result = (await employee.save());
+        return result.toObject()
     }
 
-    async removeEmployee(employeeId: string) {
-        return Employee.deleteOne({_id: employeeId}).exec();
+    async deleteEmployee(employeeId: string) {
+        return EmployeeDocument.deleteOne({_id: employeeId}).exec();
     }
 
-    async getAllEmployees() {
-        return Employee.find({});
+    async getAllEmployees(): Promise<EmployeeWithID[]> {
+        return await EmployeeDocument.find({});
     }
 
-    async updateEmployee(updatedEmployeeDetails: EmployeeWithID) {
+    async updateEmployee(updatedEmployeeDetails: EmployeeWithID): Promise<EmployeeWithID | null | undefined> {
         const {_id, name, dob, description, lastUpdated} = updatedEmployeeDetails;
-        const employee = await Employee.findByIdAndUpdate(_id, {name, dob, description, lastUpdated});
-console.log(employee);
-        return employee
+        const result = await EmployeeDocument.findByIdAndUpdate(_id, {name, dob, description, lastUpdated}, {new: true});
+        return result?.toObject()
     }
 
-    async getEmployee(employeeId: string) {
-        return Employee.findOne({_id: employeeId})
+    async getEmployee(employeeId: string): Promise<EmployeeWithID | null | undefined> {
+        console.log(employeeId, "Inside model")
+        return (await EmployeeDocument.findOne({_id: employeeId}))?.toObject()
     }
 
 }

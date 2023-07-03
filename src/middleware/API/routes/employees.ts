@@ -7,9 +7,9 @@ const employeesController = new EmployeesController();
 
 router.get('/employees', async (request, response) => {
     try{
-        const employeesDetails = await employeesController.getAllEmployeesDetails();
+        const employees = await employeesController.getAllEmployees();
 
-        return response.send(employeesDetails).status(200);
+        return response.send(employees).status(200);
     }catch(error) {
         return errorResponseHandler(error, response);
     }
@@ -22,9 +22,9 @@ router.get('/employee/:id', async (request, response) => {
             params: { id }
         } = request;
     
-        const employeeDetails = employeesController.getEmployeeDetails(id);
-    
-        return response.json(employeeDetails).status(200);
+        const employee = await employeesController.getEmployee(id);
+
+        return response.json(employee).status(200);
     } catch(error) {
         return errorResponseHandler(error, response);
     }
@@ -34,10 +34,9 @@ router.post('/employee', async (request, response) => {
     try{
         const { body } = request;
     
-        console.log(body, 'This is request body');
-        const insertResult = await employeesController.addNewEmployee(body);
+        const employee = await employeesController.addEmployee(body);
     
-        return response.send(insertResult).status(201);
+        return response.send(employee).status(201);
     } catch(error) {
         return errorResponseHandler(error, response);
     }
@@ -47,11 +46,8 @@ router.put('/employee', async (request, response) => {
     try {
         const {body} = request;
 
-    console.log(request.params)
-    
-    const updateResult = await employeesController.updateEmployeeDetails(body);
-
-    return response.send(updateResult).status(200)
+        const employee = await employeesController.updateEmployee(body);
+        return response.send(employee).status(200)
     } catch(error) {
         return errorResponseHandler(error, response);
     }
@@ -64,9 +60,9 @@ router.delete('/employee/:id', async (request, response) => {
             params: { id }
         } = request;
     
-        const deleteResult = await employeesController.deleteEmployee(id);
+        const employee = await employeesController.deleteEmployee(id);
     
-        return response.send(deleteResult).status(deleteResult._id? 200: 204);
+        return response.send(employee).status(employee._id? 200: 204);
     } catch(error) {
         return errorResponseHandler(error, response);
     }

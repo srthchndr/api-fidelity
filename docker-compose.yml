@@ -1,0 +1,28 @@
+version: '3.8'
+
+services: 
+  mongodb:
+    container_name: db_container
+    image: mongo:latest
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo:/data/db
+
+  app:
+    container_name: api_container
+    build: .
+    depends_on:
+      - mongodb
+    environment:
+      DB_CONNECTION_STRING: "mongodb://db_container:27017"
+      DB_NAME: 'employee'
+      PORT: 3100
+      CLIENT_BASE_URL: 'http://localhost:4200'
+    ports:
+      - 3100:3100
+    tty: true
+
+volumes:
+  mongo: {}

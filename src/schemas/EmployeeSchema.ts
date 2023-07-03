@@ -1,11 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-
-export interface Employee {
-    description: string,
-    dob: Date,
-    name: string,
-    lastUpdated: Date
-}
+import { Employee } from "../types/employeeModelTypes";
 
 export const EmployeeSchema = new Schema<Employee>({
     description: String,
